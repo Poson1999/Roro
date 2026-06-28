@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,7 +24,7 @@ jobs:
 
       - name: Build Web
         run: |
-          rm -f pubspec.lock
+          # 這裡不需要 rm -f pubspec.lock，直接執行即可
           flutter pub get
           flutter build web --release --base-href /
 
@@ -33,5 +34,7 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          working-directory: ./
-          vercel-args: '--prod'
+          # 關鍵修改：指定只部署 build/web 目錄
+          working-directory: ./build/web
+          # 關鍵修改：加上 --no-build，這是最重要的，強制 Vercel 跳過建置
+          vercel-args: '--prod --no-build'
