@@ -24,12 +24,12 @@ jobs:
 
       - name: Deploy to Vercel
         run: |
-          # 安裝官方 Vercel CLI
           npm install -g vercel
-          # 使用 --prebuilt 直接將 build/web 內的檔案上傳，跳過所有編譯
+          # 建立必要的連結目錄，強制指定專案 ID 與組織 ID
+          mkdir -p .vercel
+          echo '{"projectId":"${{ secrets.VERCEL_PROJECT_ID }}","orgId":"${{ secrets.VERCEL_ORG_ID }}"}' > .vercel/project.json
+          # 使用 --prebuilt 直接發佈編譯好的檔案
           vercel deploy --prebuilt --token ${{ secrets.VERCEL_TOKEN }} --prod
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          # 告訴 Vercel 該檔案是預先編譯好的
-          VERCEL_FORCE_PREBUILT: '1'
