@@ -1,0 +1,17 @@
+vercel_token.txt
+.env
+
+build/
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+.flutter-plugins
+.flutter-plugins-dependencies
+.metadata
+.vscode/
+.idea/
+*.apk
+*.aab
+*.so
+*.dill
