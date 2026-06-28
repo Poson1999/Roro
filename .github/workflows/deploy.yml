@@ -25,9 +25,18 @@ jobs:
       - name: Deploy to Vercel
         run: |
           npm install -g vercel
-          # 強制連結專案，確保 Vercel CLI 知道要部署到哪裡
+          
+          # 1. 依照 Vercel Build Output API 規格建立目錄
+          mkdir -p .vercel/output/static
+          
+          # 2. 將 Flutter 編譯成品搬移至 Vercel 要求的靜態目錄
+          cp -r build/web/* .vercel/output/static/
+          
+          # 3. 建立 Vercel 必須的設定檔 (處理路由轉發，避免 404)
+          echo '{"version":3,"routes":[{"handle":"filesystem"},{"src":"/.*","dest":"/index.html"}]}' > .vercel/output/config.json
+          
+          # 4. 強制連結並部署
           vercel link --yes --token ${{ secrets.VERCEL_TOKEN }} --project ${{ secrets.VERCEL_PROJECT_ID }} --scope ${{ secrets.VERCEL_ORG_ID }}
-          # 直接發佈已經編譯好的檔案，強制不進行二次編譯
           vercel deploy --prebuilt --token ${{ secrets.VERCEL_TOKEN }} --prod
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
