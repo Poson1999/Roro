@@ -11,11 +11,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -24,17 +19,17 @@ jobs:
 
       - name: Build Web
         run: |
-          # 這裡不需要 rm -f pubspec.lock，直接執行即可
           flutter pub get
           flutter build web --release --base-href /
 
       - name: Deploy to Vercel
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          # 關鍵修改：指定只部署 build/web 目錄
-          working-directory: ./build/web
-          # 關鍵修改：加上 --no-build，這是最重要的，強制 Vercel 跳過建置
-          vercel-args: '--prod --no-build'
+        run: |
+          # 安裝官方 Vercel CLI
+          npm install -g vercel
+          # 使用 --prebuilt 直接將 build/web 內的檔案上傳，跳過所有編譯
+          vercel deploy --prebuilt --token ${{ secrets.VERCEL_TOKEN }} --prod
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          # 告訴 Vercel 該檔案是預先編譯好的
+          VERCEL_FORCE_PREBUILT: '1'
