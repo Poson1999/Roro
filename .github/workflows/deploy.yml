@@ -25,10 +25,9 @@ jobs:
       - name: Deploy to Vercel
         run: |
           npm install -g vercel
-          # 建立必要的連結目錄，強制指定專案 ID 與組織 ID
-          mkdir -p .vercel
-          echo '{"projectId":"${{ secrets.VERCEL_PROJECT_ID }}","orgId":"${{ secrets.VERCEL_ORG_ID }}"}' > .vercel/project.json
-          # 使用 --prebuilt 直接發佈編譯好的檔案
+          # 強制連結專案，確保 Vercel CLI 知道要部署到哪裡
+          vercel link --yes --token ${{ secrets.VERCEL_TOKEN }} --project ${{ secrets.VERCEL_PROJECT_ID }} --scope ${{ secrets.VERCEL_ORG_ID }}
+          # 直接發佈已經編譯好的檔案，強制不進行二次編譯
           vercel deploy --prebuilt --token ${{ secrets.VERCEL_TOKEN }} --prod
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
